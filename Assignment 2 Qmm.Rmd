@@ -1,0 +1,88 @@
+---
+title: "Assignment 2"
+author: "Saipriya Gourineni"
+date: "`r Sys.Date()`"
+output:
+  word_document: default
+  pdf_document: default
+  html_document: default
+---
+
+```{r}
+library(lpSolve)
+
+# The main goal is to increase
+# The goal function is next.
+# Max Z = 420L1 + 360M1 + 300S1 + 420L2 + 360M2 + 300S2 = 420L3 + 360M3 + 300S3
+
+f.obj<-c(420,360,300,420,360,300,420,360,300)
+
+# Subject to
+#   L1 + M1 + S1 ≤ 750
+#   L2 + M2 + S2 ≤ 900
+#   L3 + M3 + S3 ≤ 450
+# 
+#   20L1 + 15M1 + 12S1 ≤ 13000
+#   20L2 + 15M2 + 12S2 ≤ 12000
+#   20L3 + 15M3 + 12S3 ≤ 5000
+# 
+#   L1 + L2 + L3 ≤ 900
+#   M1 + M2 + M3 ≤ 1200
+#   S1 + S2 + S3 ≤ 750
+#   
+# Using all 9 variables in each equation, write down the following constraints:
+# L1 + M1 + S1 + 0L2 + 0M2 + 0S2 + 0L3 + 0M3 + 0S3 ≤ 750
+# 0L1 + 0M1 + 0S1 + L2 + M2 + S2 + 0L3 + 0M3 + 0S3 ≤ 900
+# 0L1 + 0M1 + 0S1 + 0L2 + 0M2 + 0S2 + L3 + M3 + S3 ≤ 450
+# 20L1 + 15M1 + 12S1 + 0L2 + 0M2 + 0S2 + 0L3 + 0M3 + 0S3 ≤ 13000
+# 0L1 + 0M1 + 0S1 + 20L2 + 15M2 + 12S2 + 0L3 + 0M3 + 0S3 ≤ 12000
+# 0L1 + 0M1 + 0S1 + 0L2 + 0M2 + 0S2 + 20L3 + 15M3 + 12S3 ≤ 5000
+# L1 + 0M1 + 0S1 + L2 + 0M2 + 0S2 + L3 + 0M3 + 0S3 ≤ 900
+# 0L1 + M1 + 0S1 + 0L2 + M2 + 0S2 + 0L3 + M3 + 0S3 ≤ 1200
+# 0L1 + 0M1 + S1 + 0L2 + 0M2 + S2 + 0L3 + 0M3 + S3 ≤ 750
+
+# In matrix form, the constraints' coefficients can be expressed as
+#   1 1 1 0 0 0 0 0 0
+#   0 0 0 1 1 1 0 0 0
+#   0 0 0 0 0 0 1 1 1
+#   20 15 12 0 0 0 0 0 0
+#   0 0 0 20 15 12 0 0 0
+#   0 0 0 0 0 0 20 15 12
+#   1 0 0 1 0 0 1 0 0
+#   0 1 0 0 1 0 0 1 0
+#   0 0 1 0 0 1 0 0 1
+# 
+# Creating the Matrix form for the constraints: 
+f.con<- matrix(c(1,1,1,0,0,0,0,0,0,
+                 0,0,0,1,1,1,0,0,0,
+                 0,0,0,0,0,0,1,1,1,
+                 20,15,12,0,0,0,0,0,0,
+                 0,0,0,20,15,12,0,0,0,
+                 0,0,0,0,0,0,20,15,12,
+                 1,0,0,1,0,0,1,0,0,
+                 0,1,0,0,1,0,0,1,0,
+                 0,0,1,0,0,1,0,0,1), nrow=9, byrow=TRUE)
+
+#Seting the direction of inequalities constraints
+f.dir <- c("<=",
+           "<=",
+           "<=",
+           "<=",
+           "<=",
+           "<=",
+           "<=",
+           "<=",
+           "<=")
+
+# seting the right hand side coefficients
+f.rhs = c(750,900,450,13000,12000,5000,900,1200,750)
+
+#Finding the value of Objective fUNCTION
+lp("max",f.obj,f.con,f.dir,f.rhs)
+
+#Getting the values of Variables
+lp("max",f.obj,f.con,f.dir,f.rhs)$solution
+```
+
+```
+
